@@ -11,3 +11,5 @@
 ### Another Title
 
 content
+
+small change to allow both linting methods to be in sync
