@@ -1,0 +1,67 @@
+---
+name: Carry out linting via IssueOps command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: read
+  attestations: read
+  checks: read # required for checking if the CI checks have passed on a pull request (if using this Action in the context of PR comments)
+  contents: read # issue github/command#49 shows that this permission is also needed
+  deployments: read
+  id-token: none
+  issues: write # required for adding reactions to command comments on issues
+  discussions: read
+  packages: read
+  pages: read
+  pull-requests: write # required for adding reactions to command comments on PRs
+  repository-projects: read
+  security-events: read
+  statuses: read
+
+jobs:
+  issue-ops-linting:
+    if: (github.event.issue.pull_request && startsWith(github.event.comment.body, '/lint'))
+    name: Do work on PR comments
+    runs-on: ubuntu-latest
+    steps:
+      - uses: github/command@v1.4.0
+        id: command
+        with:
+          command: "/lint"
+          reaction: eyes
+          success_reaction: "rocket" # <-- NEW: adds a 🚀 only if your command succeeds
+          failure_reaction: "-1" # <-- NEW: adds a 👎  if your command fails
+          allowlist: grahame-student
+
+      - name: Checkout PR branch
+        if: ${{ steps.command.outputs.continue == 'true' }}
+        uses: actions/checkout@v4.2.2
+        with:
+          # Adjust checked out ref to match pr triggered workflow
+          ref: "refs/pull/${{ github.event.issue.number }}/merge"
+          fetch-depth: 0
+                  
+      - uses: actions/github-script@v7.0.1
+        id: get-pr-details
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ steps.command.outputs.issue_number }}
+            });
+            return {
+              "sha": pr.data.head.sha,
+              "base_ref": pr.data.base.ref
+            }
+
+      - name: Run Super Linter
+        uses: super-linter/super-linter/slim@v7.2.1
+        env:
+          DEFAULT_BRANCH: ${{ fromJSON(steps.get-pr-details.outputs.result).base_ref }}
+          GITHUB_TOKEN: ${{ github.token }}
+          VALIDATE_ALL_CODEBASE: false
