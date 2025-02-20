@@ -35,6 +35,7 @@ jobs:
           success_reaction: "rocket" # <-- NEW: adds a 🚀 only if your command succeeds
           failure_reaction: "-1" # <-- NEW: adds a 👎  if your command fails
           allowlist: grahame-student
+          skip_ci: true
 
       - name: Checkout PR branch
         if: ${{ steps.command.outputs.continue == 'true' }}
