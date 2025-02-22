@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4.2.2
         with:
           # Adjust checked out ref to match pr triggered workflow
-          ref: ${{ steps.command.outputs.sha }}
+          ref: "refs/remotes/pull/${{ github.event.issue.number }}/merge"
           fetch-depth: 0
 
       - name: Run Super Linter
