@@ -38,5 +38,10 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" == "issue_comment" ]; then
             echo "This is a GitHub issue_comment event."
             PULL_REQUEST=$(jq -r .issue.pull_request <"$GITHUB_EVENT_PATH")
+            if [ "$PULL_REQUEST" == "null" ]; then
+              echo "This is an issue comment"
+            else
+              echo "This is a PR comment"            
+            fi
             echo "Pull request payload: $PULL_REQUEST"
           fi
