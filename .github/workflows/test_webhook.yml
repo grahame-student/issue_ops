@@ -27,6 +27,7 @@ jobs:
           failure_reaction: "-1" # <-- NEW: adds a 👎  if your command fails
           allowlist: grahame-student
           skip_ci: true
+          allowed_contexts: "pull_request,issue"
 
       - name: Checkout PR branch
         if: ${{ steps.command.outputs.continue == 'true' }}
