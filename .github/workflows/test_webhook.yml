@@ -1,0 +1,41 @@
+---
+name: Test Webhook Payload
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  checks: read # required for checking if the CI checks have passed on a pull request (if using this Action in the context of PR comments)
+  contents: read # issue github/command#49 shows that this permission is also needed
+  issues: write # required for adding reactions to command comments on issues
+  pull-requests: write # required for adding reactions to command comments on PRs
+  statuses: read
+
+jobs:
+  issue-ops-linting:
+    if: (startsWith(github.event.comment.body, '/test'))
+    name: Do work on PR comments
+    runs-on: ubuntu-latest
+    steps:
+      - uses: github/command@v2.0.0
+        id: command
+        with:
+          command: "/test"
+          reaction: eyes
+          success_reaction: "rocket" # <-- NEW: adds a 🚀 only if your command succeeds
+          failure_reaction: "-1" # <-- NEW: adds a 👎  if your command fails
+          allowlist: grahame-student
+          skip_ci: true
+
+      - name: Checkout PR branch
+        if: ${{ steps.command.outputs.continue == 'true' }}
+        uses: actions/checkout@v4.2.2
+
+      - name: Check webhook for comment type PR / Issue
+        run: |
+          if [ "$GITHUB_EVENT_NAME" == "issue_comment" ]; then
+            echo "This is a GitHub issue_comment event."
+            PULL_REQUEST=$(jq -r .issue.pull_request <"$GITHUB_EVENT_PATH")
+            echo "Pull request payload: $PULL_REQUEST"
+          fi
