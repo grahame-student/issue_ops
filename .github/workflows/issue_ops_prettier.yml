@@ -1,0 +1,42 @@
+---
+name: Run Prettier
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  checks: read # required for checking if the CI checks have passed on a pull request (if using this Action in the context of PR comments)
+  contents: read # issue github/command#49 shows that this permission is also needed
+  issues: write # required for adding reactions to command comments on issues
+  pull-requests: write # required for adding reactions to command comments on PRs
+  statuses: read
+
+jobs:
+  issue-ops-run-prettier:
+    if: (startsWith(github.event.comment.body, '/prettier'))
+    name: Analyse PR comments for commands
+    runs-on: ubuntu-latest
+    steps:
+      - uses: github/command@v2.0.0
+        id: prettier-command
+        with:
+          command: "/prettier"
+          reaction: eyes
+          success_reaction: "rocket" # <-- NEW: adds a 🚀 only if your command succeeds
+          failure_reaction: "-1" # <-- NEW: adds a 👎  if your command fails
+          allowlist: grahame-student
+          skip_ci: true
+          allowed_contexts: "pull_request"
+
+      - name: Checkout PR branch
+        if: ${{ steps.prettier-command.outputs.continue == 'true' }}
+        uses: actions/checkout@v4.2.2
+
+      - name: Debug output
+        if: ${{ steps.prettier-command.outputs.continue == 'true' }}
+        run: |
+          echo "/prettier command detected"
+          echo "params: ${{ steps.prettier-command.outputs.params }}"
+          read -a PARAMS <<< ${{ steps.prettier-command.outputs.params }}
+          echo ${arr[@]}
