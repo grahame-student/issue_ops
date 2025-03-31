@@ -42,7 +42,7 @@ jobs:
         env:
           CMD_PARAMS: ${{ steps.prettier-command.outputs.params }}
           FIRST_COMMIT: ${{ steps.prettier-command.outputs.base_ref }}
-          LAST_COMMIT: ${{ steps.prettier-command.outputs.head_ref }}
+          LAST_COMMIT: ${{ steps.prettier-command.outputs.ref }}
         run: |
           echo "/prettier command detected"
           echo "params: $CMD_PARAMS"
