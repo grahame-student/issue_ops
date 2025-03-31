@@ -35,6 +35,7 @@ jobs:
 
       - name: Debug output
         if: ${{ steps.prettier-command.outputs.continue == 'true' }}
+        shell: bash
         run: |
           echo "/prettier command detected"
           echo "params: ${{ steps.prettier-command.outputs.params }}"
