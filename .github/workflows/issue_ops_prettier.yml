@@ -72,6 +72,7 @@ jobs:
             npx prettier --write --end-of-line=auto **.*
           elif [ "${PARAMS[0]}" = "pr" ]; then
             echo "formatting only PR files"
+            git show-branch --list            
             CHANGED_FILES=$(git diff --name-only --diff-filtered=d "${FIRST_COMMIT}~1" "${LAST_COMMIT}")
             echo "$CHANGED_FILES"
           else
