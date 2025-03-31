@@ -7,7 +7,7 @@ on:
 
 permissions:
   checks: read # required for checking if the CI checks have passed on a pull request (if using this Action in the context of PR comments)
-  contents: read # issue github/command#49 shows that this permission is also needed
+  contents: write # issue github/command#49 shows that this permission is also needed. Allow changes to be pushed back to the branch.
   issues: write # required for adding reactions to command comments on issues
   pull-requests: write # required for adding reactions to command comments on PRs
   statuses: read
