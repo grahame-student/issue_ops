@@ -68,10 +68,10 @@ jobs:
           fi
 
           if [ "${PARAMS[0]}" = "all" ]; then
-            echo "formatting all files in repo"
-            npx prettier --write --end-of-line=auto **.*
+            echo "formatting all files in repo - excludes .github directory"
+            npx prettier --write --ignore-unknown --end-of-line=auto '**/*' '!**/.github/**'
           elif [ "${PARAMS[0]}" = "pr" ]; then
-            echo "formatting only PR files"
+            echo "formatting only PR files - excludes .github directory"
       
             # Fetch the base commit to ensure it exists locally
             git fetch origin "${FIRST_COMMIT}:${FIRST_COMMIT}" || { echo "Failed to fetch base commit"; exit 1; }
@@ -85,7 +85,7 @@ jobs:
             echo "$CHANGED_FILES"
       
             if [ -n "$CHANGED_FILES" ]; then
-              npx prettier --write --end-of-line=auto $CHANGED_FILES
+              npx prettier --write --ignore-unknown --end-of-line=auto "$CHANGED_FILES" '!**/.github/**'
             else
               echo "No files changed"
             fi
