@@ -43,8 +43,8 @@ jobs:
           # Ensure that some arguments have been provided
           if [ "${{ steps.prettier-command.outputs.params }}" = "" ]; then
             echo "No arguments provided:"
-            echo "use '/prettier pr' to format only the files in the PR"
-            echo "use '/prettier all' to format all files in the repository"
+            echo "use '/prettier | pr' to format only the files in the PR"
+            echo "use '/prettier | all' to format all files in the repository"
             exit 1
           fi
 
@@ -55,8 +55,8 @@ jobs:
           # Ensure that only 1 argument has been provided
           if [ "$PARAM_COUNT" -ne 1 ]; then
             echo "Too many arguments provided:"
-            echo "use '/prettier pr' to format only the files in the PR"
-            echo "use '/prettier all' to format all files in the repository"
+            echo "use '/prettier | pr' to format only the files in the PR"
+            echo "use '/prettier | all' to format all files in the repository"
             exit 1
           fi
           
