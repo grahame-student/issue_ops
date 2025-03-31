@@ -19,7 +19,7 @@ permissions:
   pull-requests: write # required for adding reactions to command comments on PRs
   repository-projects: read
   security-events: read
-  statuses: read
+  statuses: write
 
 jobs:
   issue-ops-linting:
