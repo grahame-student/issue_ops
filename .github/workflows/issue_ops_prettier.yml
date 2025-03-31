@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
-          # ref: ${{ steps.prettier-command.outputs.ref }}
+          ref: ${{ steps.prettier-command.outputs.ref }}
 
       - name: Process prettier command
         if: ${{ steps.prettier-command.outputs.continue == 'true' }}
@@ -72,8 +72,7 @@ jobs:
             npx prettier --write --end-of-line=auto **.*
           elif [ "${PARAMS[0]}" = "pr" ]; then
             echo "formatting only PR files"
-            git show-branch --list            
-            git checkout "${FIRST_COMMIT}~1"
+            git fetch origin "${FIRST_COMMIT}":"${FIRST_COMMIT}"
             CHANGED_FILES=$(git diff --name-only --diff-filtered=d "${FIRST_COMMIT}~1" "${LAST_COMMIT}")
             echo "$CHANGED_FILES"
           else
