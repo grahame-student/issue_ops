@@ -31,9 +31,12 @@ jobs:
 
       - name: Checkout PR branch
         if: ${{ steps.prettier-command.outputs.continue == 'true' }}
-        uses: actions/checkout@v4.2.2        
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.prettier-command.outputs.ref }}
 
-      - name: Debug output
+      - name: Process prettier command
         if: ${{ steps.prettier-command.outputs.continue == 'true' }}
         shell: bash
         env:
@@ -62,7 +65,11 @@ jobs:
             exit 1
           fi
           
-          for i in "${PARAMS[@]}";
-          do
-            echo "$i";
-          done
+          if [ "${PARAMS[0]}" = "all" ]; then
+            echo "formatting all files in repo"
+            npx prettier --write --end-of-line=auto **.*
+          fi
+
+      - name: Push changes back to PR branch
+        run: |
+          git status
