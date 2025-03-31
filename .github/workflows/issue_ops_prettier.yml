@@ -85,7 +85,7 @@ jobs:
             echo "$CHANGED_FILES"
       
             if [ -n "$CHANGED_FILES" ]; then
-              npx prettier --write --ignore-unknown --end-of-line=auto "$CHANGED_FILES" '!**/.github/**'
+              npx prettier --write --ignore-unknown --end-of-line=auto $CHANGED_FILES '!**/.github/**'
             else
               echo "No files changed"
             fi
