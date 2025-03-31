@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "/prettier command detected"
           echo "params: ${{ steps.prettier-command.outputs.params }}"
-          read -a -r PARAMS <<< "${{ steps.prettier-command.outputs.params }}"
+          read -r -a PARAMS <<< "${{ steps.prettier-command.outputs.params }}"
           for i in "${PARAMS[@]}";
           do
             echo "$i";
