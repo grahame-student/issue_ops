@@ -68,13 +68,14 @@ jobs:
           if [ "${PARAMS[0]}" = "all" ]; then
             echo "formatting all files in repo"
             npx prettier --write --end-of-line=auto **.*
-          elif [ "${PARAMS[0]}" = "all" ]; then
+          elif [ "${PARAMS[0]}" = "pr" ]; then
             echo "formatting only PR files"
             echo "TODO"
           else
             echo "Unknown argument provided:"
             echo "use '/prettier | pr' to format only the files in the PR"
             echo "use '/prettier | all' to format all files in the repository"
+            exit 1
           fi
 
       - name: Push changes back to PR branch
