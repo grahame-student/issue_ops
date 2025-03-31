@@ -45,6 +45,19 @@ jobs:
           ref: "refs/pull/${{ github.event.issue.number }}/merge"
           fetch-depth: 0
 
+      - name: Fetch base ref
+        if: ${{ steps.prettier-command.outputs.continue == 'true' }}
+        shell: bash
+        env:
+          CMD_PARAMS: ${{ steps.prettier-command.outputs.params }}
+          FIRST_COMMIT: ${{ steps.prettier-command.outputs.base_ref }}
+        run: |
+            # Fetch the base commit to ensure it exists locally
+            git fetch origin "${FIRST_COMMIT}:${FIRST_COMMIT}" || { echo "Failed to fetch base commit"; exit 1; }
+      
+            # Check if the commits exist
+            git rev-parse "${FIRST_COMMIT}" || { echo "Base commit not found"; exit 1; }
+
       - name: Run Super Linter
         uses: super-linter/super-linter/slim@v7.2.1
         env:
