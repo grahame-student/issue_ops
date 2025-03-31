@@ -31,7 +31,7 @@ jobs:
 
       - name: Checkout PR branch
         if: ${{ steps.prettier-command.outputs.continue == 'true' }}
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.2.2        
 
       - name: Debug output
         if: ${{ steps.prettier-command.outputs.continue == 'true' }}
@@ -40,6 +40,14 @@ jobs:
           echo "/prettier command detected"
           echo "params: ${{ steps.prettier-command.outputs.params }}"
           read -r -a PARAMS <<< "${{ steps.prettier-command.outputs.params }}"
+          PARAM_COUNT=$(${#a[@]})
+
+          if [ "$PARAM_COUNT" -eq 0 ]; then
+            echo "No arguments provided:"
+            echo "use '/prettier pr' to format only the files in the PR"
+            echo "use '/prettier all' to format all files in the repository"
+          fi
+          
           for i in "${PARAMS[@]}";
           do
             echo "$i";
