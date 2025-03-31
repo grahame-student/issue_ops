@@ -41,6 +41,8 @@ jobs:
         shell: bash
         env:
           CMD_PARAMS: ${{ steps.prettier-command.outputs.params }}
+          FIRST_COMMIT: ${{ steps.prettier-command.outputs.base_ref }}
+          LAST_COMMIT: ${{ steps.prettier-command.outputs.head_ref }}
         run: |
           echo "/prettier command detected"
           echo "params: $CMD_PARAMS"
@@ -70,7 +72,8 @@ jobs:
             npx prettier --write --end-of-line=auto **.*
           elif [ "${PARAMS[0]}" = "pr" ]; then
             echo "formatting only PR files"
-            echo "TODO"
+            CHANGED_FILES=$(git diff --name-only --diff-filtered=d "${FIRST_COMMIT}~1" "${LAST_COMMIT}")
+            echo "$CHANGED_FILES"
           else
             echo "Unknown argument provided:"
             echo "use '/prettier | pr' to format only the files in the PR"
