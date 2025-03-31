@@ -43,7 +43,7 @@ jobs:
           echo "params: $CMD_PARAMS"
 
           # Ensure that some arguments have been provided
-          if [ "$CMD_PARAMS" = "" ]; then
+          if [ -z "$CMD_PARAMS" ]; then
             echo "No arguments provided:"
             echo "use '/prettier | pr' to format only the files in the PR"
             echo "use '/prettier | all' to format all files in the repository"
@@ -51,8 +51,8 @@ jobs:
           fi
 
           # Create an array of arguments and determine how many have been passed in
-          read -r -a PARAMS <<< "$CMD_PARAMS"
-          PARAM_COUNT=$(${#PARAMS[@]})
+          IFS=' ' read -r -a PARAMS <<< "$CMD_PARAMS"
+          PARAM_COUNT=${#PARAMS[@]}
 
           # Ensure that only 1 argument has been provided
           if [ "$PARAM_COUNT" -ne 1 ]; then
