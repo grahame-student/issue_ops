@@ -10,6 +10,7 @@ permissions:
   issues: write # required for adding reactions to command comments on issues
   pull-requests: write # required for adding reactions to command comments on PRs
   statuses: read
+  contents: read
 
 jobs:
   issue-ops-run-prettier:
@@ -74,7 +75,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ls -la .
           RESPONSE=$(jq -r '.response' response.json)
           # Sanitize the response to escape special characters
           SAFE_RESPONSE=$(printf '%s' "$RESPONSE" | sed 's/%/%25/g; s/\n/%0A/g; s/\r/%0D/g')
