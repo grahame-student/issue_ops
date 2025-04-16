@@ -1,0 +1,68 @@
+---
+name: Run AI Prompt
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  checks: read # required for checking if the CI checks have passed on a pull request (if using this Action in the context of PR comments)
+  issues: write # required for adding reactions to command comments on issues
+  pull-requests: write # required for adding reactions to command comments on PRs
+  statuses: read
+
+jobs:
+  issue-ops-run-prettier:
+    if: (startsWith(github.event.comment.body, '/ai'))
+    name: Analyse PR comments for commands
+    env:
+      ollama-model: "gemma3:1b"
+      model-path: "./.ollama"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: github/command@v2.0.0
+        id: ai-command
+        with:
+          command: "/ai"
+          reaction: eyes
+          success_reaction: "rocket" # <-- NEW: adds a 🚀 only if your command succeeds
+          failure_reaction: "-1" # <-- NEW: adds a 👎  if your command fails
+          allowlist: grahame-student
+          skip_ci: true
+          allowed_contexts: "pull_request"
+
+      - name: Checkout PR branch
+        if: ${{ steps.ai-command.outputs.continue == 'true' }}
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.ai-command.outputs.ref }}
+
+      - name: Process AI command
+        if: ${{ steps.ai-command.outputs.continue == 'true' }}
+        shell: bash
+        env:
+          CMD_PARAMS: ${{ steps.ai-command.outputs.params }}
+        run: |
+          echo "/ai command detected"
+          echo "params: $CMD_PARAMS"
+
+      - name: Install Ollama
+        if: ${{ steps.ai-command.outputs.continue == 'true' }}
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama pull ${{ env.ollama-model }}
+
+      - name: Run prompt
+        if: ${{ steps.ai-command.outputs.continue == 'true' }}
+        env:
+          CMD_PARAMS: ${{ steps.ai-command.outputs.params }}
+        run: |
+          curl http://localhost:11434/api/generate -d '{"model":"${{ env.ollama-model }}","prompt":"${{ steps.ai-command.outputs.params }}","stream":"false"}' -o "response.json"
+
+      - name: Add comment to PR
+        run: |
+          RESPONSE=$(jq -r '.response' response.json)
+          # Sanitize the response to escape special characters
+          SAFE_RESPONSE=$(printf '%s' "$RESPONSE" | sed 's/%/%25/g; s/\n/%0A/g; s/\r/%0D/g')
+          gh pr comment ${{ steps-ai-command.outputs.issue_number }} --body "$SAFE_RESPONSE"
