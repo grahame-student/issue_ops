@@ -70,6 +70,13 @@ jobs:
           echo "$JSON_STRING" > prompt.json
           curl http://127.0.0.1:11434/api/generate -d "$(<prompt.json)" -o "response.json"
 
+      - name: Upload files
+        uses: actions/upload-artifact@4.2.0
+        with:
+          paths: |
+            prompt.json
+            response.json
+
       - name: Add comment to PR
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
         env:
