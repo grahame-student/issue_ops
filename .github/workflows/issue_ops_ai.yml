@@ -49,15 +49,14 @@ jobs:
       - name: Install Ollama
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
         run: |
-          # curl -fsSL https://ollama.com/install.sh | sh
+          curl -fsSL https://ollama.com/install.sh | sh
           echo skipped
 
       - name: Install Model
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
         run: |
-          # ollama serve &
-          # ollama pull ${{ env.ollama-model }}
-          echo skipped
+          ollama serve &
+          ollama pull ${{ env.ollama-model }}
 
       - name: Run prompt
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
@@ -66,14 +65,12 @@ jobs:
         run: |
           JSON_STRING=$(
             jq --null-input \
-              --arg model "${{ env.ollama-model }}" \
+              --arg model "${{ env.OLLAMA_MODEL }}" \
               --arg prompt "${{ steps.ai-command.outputs.params }}" \
               '{model: $model, prompt: $prompt, stream: "false"}'
           )
-          # echo '{"model":"${{ env.ollama-model }}","prompt":"${{ steps.ai-command.outputs.params }}","stream":"false"}' > prompt.json
           echo "$JSON_STRING" > prompt.json
-          cat prompt.json
-          # curl http://localhost:11434/api/generate -d '{"model":"${{ env.ollama-model }}","prompt":"${{ steps.ai-command.outputs.params }}","stream":"false"}' -o "response.json"
+          curl http://localhost:11434/api/generate -d "$(<prompt.json)" -o "response.json"
 
       - name: Add comment to PR
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
