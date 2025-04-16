@@ -54,6 +54,7 @@ jobs:
 
       - name: Install Model
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
+        run: |
           ollama pull ${{ env.ollama-model }}
 
       - name: Run prompt
