@@ -56,7 +56,7 @@ jobs:
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
         run: |
           ollama serve &
-          ollama pull ${{ env.ollama-model }}
+          ollama pull ${{ env.OLLAMA_MODEL }}
 
       - name: Run prompt
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
