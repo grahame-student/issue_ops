@@ -69,7 +69,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          ls -la .
           RESPONSE=$(jq -r '.response' response.json)
           # Sanitize the response to escape special characters
           SAFE_RESPONSE=$(printf '%s' "$RESPONSE" | sed 's/%/%25/g; s/\n/%0A/g; s/\r/%0D/g')
+          echo "$SAFE_RESPONSE"
           gh pr comment ${{ steps.ai-command.outputs.issue_number }} --body "$SAFE_RESPONSE"
