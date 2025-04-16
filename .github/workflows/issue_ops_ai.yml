@@ -65,7 +65,7 @@ jobs:
             jq --null-input \
               --arg model "${{ env.OLLAMA_MODEL }}" \
               --arg prompt "${{ steps.ai-command.outputs.params }}" \
-              '{model: $model, prompt: $prompt, stream: "false"}'
+              '{model: $model, prompt: $prompt, stream: false}'
           )
           echo "$JSON_STRING" > prompt.json
           curl http://127.0.0.1:11434/api/generate -d "$(<prompt.json)" -o "response.json"
