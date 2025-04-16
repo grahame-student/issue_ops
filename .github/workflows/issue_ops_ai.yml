@@ -51,6 +51,9 @@ jobs:
         if: ${{ steps.ai-command.outputs.continue == 'true' }}
         run: |
           curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Install Model
+        if: ${{ steps.ai-command.outputs.continue == 'true' }}
           ollama pull ${{ env.ollama-model }}
 
       - name: Run prompt
