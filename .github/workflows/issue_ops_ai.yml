@@ -65,6 +65,8 @@ jobs:
           curl http://localhost:11434/api/generate -d '{"model":"${{ env.ollama-model }}","prompt":"${{ steps.ai-command.outputs.params }}","stream":"false"}' -o "response.json"
 
       - name: Add comment to PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           RESPONSE=$(jq -r '.response' response.json)
           # Sanitize the response to escape special characters
