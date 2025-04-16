@@ -73,7 +73,7 @@ jobs:
       - name: Upload files
         uses: actions/upload-artifact@4.2.0
         with:
-          paths: |
+          path: |
             prompt.json
             response.json
 
