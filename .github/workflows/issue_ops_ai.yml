@@ -52,17 +52,14 @@ jobs:
           curl -fsSL https://ollama.com/install.sh | sh
           echo skipped
 
-      - name: Install Model
-        if: ${{ steps.ai-command.outputs.continue == 'true' }}
-        run: |
-          ollama serve &
-          ollama pull ${{ env.OLLAMA_MODEL }}
-
-      - name: Run prompt
-        if: ${{ steps.ai-command.outputs.continue == 'true' }}
+      - name: Install Model and run prompt
         env:
           CMD_PARAMS: ${{ steps.ai-command.outputs.params }}
+        if: ${{ steps.ai-command.outputs.continue == 'true' }}
         run: |
+          ollama -v
+          ollama serve &
+          ollama pull ${{ env.OLLAMA_MODEL }}
           JSON_STRING=$(
             jq --null-input \
               --arg model "${{ env.OLLAMA_MODEL }}" \
