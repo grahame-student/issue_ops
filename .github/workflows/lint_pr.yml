@@ -16,6 +16,8 @@ permissions: read-all
 
 jobs:
   lint:
+    permissions:
+      statuses: write
     runs-on: ubuntu-latest
 
     steps:
